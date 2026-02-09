@@ -82,6 +82,28 @@
     { participant: principal }
 )
 
+;; Track events by creator
+(define-map creator-event-count
+    { creator: principal }
+    { count: uint }
+)
+
+(define-map creator-event-by-index
+    { creator: principal, index: uint }
+    { event-id: uint }
+)
+
+;; Track events by status
+(define-map status-event-count
+    { status: (string-ascii 10) }
+    { count: uint }
+)
+
+(define-map status-event-by-index
+    { status: (string-ascii 10), index: uint }
+    { event-id: uint }
+)
+
 ;; Read-only functions
 
 ;; Get event details
@@ -119,6 +141,40 @@
     (get participant (map-get? event-participant-by-index { event-id: event-id, index: index }))
 )
 
+;; Get event count by creator
+(define-read-only (get-creator-event-count (creator principal))
+    (default-to u0 
+        (get count (map-get? creator-event-count { creator: creator }))
+    )
+)
+
+;; Get event ID by creator and index
+(define-read-only (get-creator-event-at-index (creator principal) (index uint))
+    (get event-id (map-get? creator-event-by-index { creator: creator, index: index }))
+)
+
+;; Get event count by status
+(define-read-only (get-status-event-count (status (string-ascii 10)))
+    (default-to u0 
+        (get count (map-get? status-event-count { status: status }))
+    )
+)
+
+;; Get event ID by status and index
+(define-read-only (get-status-event-at-index (status (string-ascii 10)) (index uint))
+    (get event-id (map-get? status-event-by-index { status: status, index: index }))
+)
+
+;; Check if event is within date range
+(define-read-only (is-event-in-date-range (event-id uint) (start-time uint) (end-time uint))
+    (match (get-event event-id)
+        event
+        (and (>= (get match-time event) start-time)
+             (<= (get match-time event) end-time))
+        false
+    )
+)
+
 ;; Public functions
 
 ;; Create a new event
@@ -134,6 +190,8 @@
         (
             (event-id (+ (var-get event-nonce) u1))
             (code-hash (sha256 (unwrap-panic (to-consensus-buff? access-code))))
+            (creator-count (get-creator-event-count tx-sender))
+            (status-count (get-status-event-count "open"))
         )
         ;; Update nonce
         (var-set event-nonce event-id)
@@ -153,6 +211,27 @@
                 final-result: none
             }
         )
+        
+        ;; Track event by creator
+        (map-set creator-event-by-index
+            { creator: tx-sender, index: creator-count }
+            { event-id: event-id }
+        )
+        (map-set creator-event-count
+            { creator: tx-sender }
+            { count: (+ creator-count u1) }
+        )
+        
+        ;; Track event by status
+        (map-set status-event-by-index
+            { status: "open", index: status-count }
+            { event-id: event-id }
+        )
+        (map-set status-event-count
+            { status: "open" }
+            { count: (+ status-count u1) }
+        )
+        
         (ok event-id)
     )
 )
@@ -250,6 +329,7 @@
     (let
         (
             (event (unwrap! (get-event event-id) err-not-found))
+            (closed-count (get-status-event-count "closed"))
         )
         ;; Only creator can close
         (asserts! (is-eq tx-sender (get creator event)) err-unauthorized)
@@ -262,6 +342,17 @@
             { event-id: event-id }
             (merge event { status: "closed" })
         )
+        
+        ;; Track event in closed status
+        (map-set status-event-by-index
+            { status: "closed", index: closed-count }
+            { event-id: event-id }
+        )
+        (map-set status-event-count
+            { status: "closed" }
+            { count: (+ closed-count u1) }
+        )
+        
         (ok true)
     )
 )
@@ -272,6 +363,7 @@
         (
             (event (unwrap! (get-event event-id) err-not-found))
             (participant-count (get-participant-count event-id))
+            (settled-count (get-status-event-count "settled"))
         )
         ;; Only oracle can submit
         (asserts! (is-eq tx-sender (get oracle event)) err-unauthorized)
@@ -292,6 +384,16 @@
                 status: "settled",
                 final-result: (some final-result)
             })
+        )
+        
+        ;; Track event in settled status
+        (map-set status-event-by-index
+            { status: "settled", index: settled-count }
+            { event-id: event-id }
+        )
+        (map-set status-event-count
+            { status: "settled" }
+            { count: (+ settled-count u1) }
         )
         
         ;; Automatically award points to all participants
