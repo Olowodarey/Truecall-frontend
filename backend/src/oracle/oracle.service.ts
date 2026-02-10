@@ -12,7 +12,7 @@ import {
   principalCV,
   bufferCV,
 } from '@stacks/transactions';
-import { StacksTestnet, StacksMainnet, StacksNetwork } from '@stacks/network';
+import { STACKS_MAINNET, STACKS_TESTNET, StacksNetwork } from '@stacks/network';
 import { Event, EventStatus, Match } from '../database/entities';
 import * as crypto from 'crypto';
 
@@ -34,8 +34,7 @@ export class OracleService {
   ) {
     const networkType =
       this.configService.get<string>('STACKS_NETWORK') || 'testnet';
-    this.network =
-      networkType === 'mainnet' ? new StacksMainnet() : new StacksTestnet();
+    this.network = networkType === 'mainnet' ? STACKS_MAINNET : STACKS_TESTNET;
 
     this.contractAddress =
       this.configService.get<string>('CONTRACT_ADDRESS') || '';
@@ -92,7 +91,7 @@ export class OracleService {
         network: this.network,
       });
 
-      if (broadcastResponse.error) {
+      if ('error' in broadcastResponse) {
         throw new Error(`Transaction failed: ${broadcastResponse.error}`);
       }
 
@@ -169,7 +168,7 @@ export class OracleService {
         network: this.network,
       });
 
-      if (broadcastResponse.error) {
+      if ('error' in broadcastResponse) {
         throw new Error(`Transaction failed: ${broadcastResponse.error}`);
       }
 
@@ -238,7 +237,7 @@ export class OracleService {
         network: this.network,
       });
 
-      if (broadcastResponse.error) {
+      if ('error' in broadcastResponse) {
         throw new Error(`Transaction failed: ${broadcastResponse.error}`);
       }
 
