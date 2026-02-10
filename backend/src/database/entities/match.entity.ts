@@ -58,7 +58,7 @@ export class Match {
   @Column({ default: false })
   submittedToContract: boolean;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   transactionId: string | null;
 
   @CreateDateColumn()

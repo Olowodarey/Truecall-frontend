@@ -48,7 +48,7 @@ export class Event {
   })
   status: EventStatus;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   transactionId: string | null;
 
   @CreateDateColumn()
