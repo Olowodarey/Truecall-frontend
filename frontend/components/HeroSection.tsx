@@ -19,7 +19,7 @@ export default function HeroSection() {
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 pt-[200px] pb-5">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
-          <div className="space-y-8">
+          <div className="space-y-8 text-center lg:text-left">
             <div className="space-y-4">
               <h1 className="text-5xl lg:text-6xl font-bold text-white leading-tight">
                 Provably Fair.
@@ -29,13 +29,13 @@ export default function HeroSection() {
                 </span>
               </h1>
 
-              <p className="text-xl text-gray-300 max-w-lg">
+              <p className="text-xl text-gray-300 max-w-lg mx-auto lg:mx-0">
                 A transparent, on-chain platform for giveaways and skill-based
                 prediction competitions with verifiable results.
               </p>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
               <button className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-3 rounded-lg font-semibold transition-colors">
                 Launch App
               </button>
