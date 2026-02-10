@@ -42,7 +42,6 @@ export default function HowItWorksSection() {
               TrueCall facilitates seamless blockchain-based predictions,
               enhancing transparency in the gaming process.
             </p>
-
           </div>
 
           {/* Right side - Steps with curved connecting line */}
@@ -72,7 +71,10 @@ export default function HowItWorksSection() {
             </svg>
 
             {steps.map((step, index) => (
-              <div key={index} className="relative flex items-start gap-6">
+              <div
+                key={index}
+                className="relative flex flex-col lg:flex-row items-center lg:items-start gap-4 lg:gap-6 text-center lg:text-left"
+              >
                 {/* Step number circle */}
                 <div className="relative z-10 flex-shrink-0 w-16 h-16 bg-gray-900 border-2 border-orange-400 rounded-full flex items-center justify-center shadow-lg">
                   <span className="text-lg font-bold text-orange-400">
@@ -81,7 +83,7 @@ export default function HowItWorksSection() {
                 </div>
 
                 {/* Content */}
-                <div className="flex-1 pt-2">
+                <div className="flex-1 pt-0 lg:pt-2">
                   <h3 className="text-xl font-bold text-white mb-3">
                     {step.title}
                   </h3>
