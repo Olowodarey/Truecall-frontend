@@ -31,14 +31,14 @@ export default function HowItWorksSection() {
       <div className="max-w-7xl mx-auto px-6">
         <div className="grid lg:grid-cols-2 gap-16 items-center mb-[200px]">
           {/* Left side - Title and illustration */}
-          <div className="text-left">
+          <div className="text-center lg:text-left">
             <h2 className="text-4xl lg:text-5xl font-bold text-white mb-8 leading-tight">
               How It{" "}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-yellow-400">
                 Works
               </span>
             </h2>
-            <p className="text-xl text-gray-300 mb-12 max-w-lg">
+            <p className="text-xl text-gray-300 mb-12 max-w-lg mx-auto lg:mx-0">
               TrueCall facilitates seamless blockchain-based predictions,
               enhancing transparency in the gaming process.
             </p>
