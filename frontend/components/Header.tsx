@@ -13,6 +13,12 @@ export default function Header() {
           <div>
             <div className="hidden md:flex items-center space-x-6">
               <Link
+                href="/events"
+                className="text-gray-300 hover:text-white transition-colors"
+              >
+                Events
+              </Link>
+              <Link
                 href="/platform"
                 className="text-gray-300 hover:text-white transition-colors"
               >
