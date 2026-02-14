@@ -3,7 +3,7 @@
 import { useWallet } from "@/contexts/WalletContext";
 
 export default function WalletButton() {
-  const { isConnected, userAddress, connect, disconnect } = useWallet();
+  const { isConnected, userAddress, connectWallet, disconnect } = useWallet();
 
   const formatAddress = (address: string) => {
     return `${address.slice(0, 6)}...${address.slice(-4)}`;
@@ -27,7 +27,7 @@ export default function WalletButton() {
 
   return (
     <button
-      onClick={connect}
+      onClick={connectWallet}
       className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg transition-colors text-sm font-medium"
     >
       Connect Wallet

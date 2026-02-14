@@ -1,14 +1,14 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { AppConfig, UserSession, showConnect } from "@stacks/connect";
-import { StacksTestnet } from "@stacks/network";
+import { AppConfig, UserSession } from "@stacks/connect";
+import { connect } from "@stacks/connect";
 
 interface WalletContextType {
   userSession: UserSession;
   isConnected: boolean;
   userAddress: string | null;
-  connect: () => void;
+  connectWallet: () => void;
   disconnect: () => void;
 }
 
@@ -29,17 +29,21 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
     }
   }, [userSession]);
 
-  const connect = () => {
-    showConnect({
+  const connectWallet = () => {
+    connect({
       appDetails: {
         name: "TrueCall",
-        icon: "/logo.png",
+        icon: window.location.origin + "/logo.png",
       },
-      redirectTo: "/",
       onFinish: () => {
-        const userData = userSession.loadUserData();
-        setIsConnected(true);
-        setUserAddress(userData.profile.stxAddress.testnet);
+        if (userSession.isUserSignedIn()) {
+          const userData = userSession.loadUserData();
+          setIsConnected(true);
+          setUserAddress(userData.profile.stxAddress.testnet);
+        }
+      },
+      onCancel: () => {
+        console.log("User cancelled wallet connection");
       },
       userSession,
     });
@@ -57,7 +61,7 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
         userSession,
         isConnected,
         userAddress,
-        connect,
+        connectWallet,
         disconnect,
       }}
     >
