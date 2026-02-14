@@ -26,6 +26,7 @@ export class FootballApiService {
 
   /**
    * Fetch upcoming matches from the sports API
+   * Fetches from multiple top leagues to provide more match options
    */
   async fetchUpcomingMatches(league?: string, date?: string): Promise<Match[]> {
     try {
@@ -33,19 +34,52 @@ export class FootballApiService {
 
       // For API-Football
       if (this.provider === 'api-football') {
-        const response = await axios.get(`${this.apiBaseUrl}/fixtures`, {
-          headers: {
-            'x-rapidapi-key': this.apiKey,
-            'x-rapidapi-host': 'v3.football.api-sports.io',
-          },
-          params: {
-            league: league || '39', // Default to Premier League
-            season: new Date().getFullYear(),
-            next: 10, // Get next 10 matches
-          },
-        });
+        // Top leagues to fetch from
+        const leagues = league
+          ? [league]
+          : [
+              '39', // Premier League
+              '140', // La Liga
+              '78', // Bundesliga
+              '135', // Serie A
+              '61', // Ligue 1
+              '2', // UEFA Champions League
+            ];
 
-        return this.processApiFootballResponse(response.data);
+        const allMatches: Match[] = [];
+
+        // Fetch matches from each league
+        for (const leagueId of leagues) {
+          try {
+            const response = await axios.get(`${this.apiBaseUrl}/fixtures`, {
+              headers: {
+                'x-rapidapi-key': this.apiKey,
+                'x-rapidapi-host': 'v3.football.api-sports.io',
+              },
+              params: {
+                league: leagueId,
+                season: new Date().getFullYear(),
+                next: 5, // Get next 5 matches per league
+              },
+            });
+
+            const matches = await this.processApiFootballResponse(
+              response.data,
+            );
+            allMatches.push(...matches);
+
+            this.logger.log(
+              `Fetched ${matches.length} matches from league ${leagueId}`,
+            );
+          } catch (error) {
+            this.logger.warn(
+              `Failed to fetch from league ${leagueId}: ${error.message}`,
+            );
+            // Continue with other leagues even if one fails
+          }
+        }
+
+        return allMatches;
       }
 
       // For TheSportsDB (free tier)
