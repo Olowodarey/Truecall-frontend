@@ -19,10 +19,16 @@ export default function Header() {
                 Events
               </Link>
               <Link
+                href="/create-event"
+                className="text-gray-300 hover:text-white transition-colors"
+              >
+                Create Event
+              </Link>
+              <Link
                 href="/platform"
                 className="text-gray-300 hover:text-white transition-colors"
               >
-                Create Event 
+                Platform
               </Link>
               <Link
                 href="/tournaments"
@@ -30,7 +36,7 @@ export default function Header() {
               >
                 Tournaments
               </Link>
-              {/* <Link
+              <Link
                 href="/governance"
                 className="text-gray-300 hover:text-white transition-colors"
               >
@@ -41,7 +47,7 @@ export default function Header() {
                 className="text-gray-300 hover:text-white transition-colors"
               >
                 Docs
-              </Link> */}
+              </Link>
             </div>
           </div>
 
