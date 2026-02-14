@@ -36,18 +36,6 @@ export default function Header() {
               >
                 Tournaments
               </Link>
-              <Link
-                href="/governance"
-                className="text-gray-300 hover:text-white transition-colors"
-              >
-                Governance
-              </Link>
-              <Link
-                href="/docs"
-                className="text-gray-300 hover:text-white transition-colors"
-              >
-                Docs
-              </Link>
             </div>
           </div>
 
