@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { AppConfig, UserSession } from "@stacks/connect";
+import { AppConfig, UserSession, connect } from "@stacks/connect";
 
 interface WalletContextType {
   userSession: UserSession;
@@ -36,30 +36,14 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
 
   const connectWallet = async () => {
     try {
-      // Dynamic import to avoid SSR issues
-      const { showConnect } = await import("@stacks/connect");
+      const response = await connect({ userSession });
+      console.log("Wallet connected:", response);
 
-      showConnect({
-        appDetails: {
-          name: "TrueCall",
-          icon:
-            typeof window !== "undefined"
-              ? window.location.origin + "/logo.png"
-              : "/logo.png",
-        },
-        redirectTo: "/",
-        onFinish: () => {
-          if (userSession.isUserSignedIn()) {
-            const userData = userSession.loadUserData();
-            setIsConnected(true);
-            setUserAddress(userData.profile.stxAddress.testnet);
-          }
-        },
-        onCancel: () => {
-          console.log("User cancelled wallet connection");
-        },
-        userSession,
-      });
+      if (userSession.isUserSignedIn()) {
+        const userData = userSession.loadUserData();
+        setIsConnected(true);
+        setUserAddress(userData.profile.stxAddress.testnet);
+      }
     } catch (error) {
       console.error("Error connecting wallet:", error);
     }
