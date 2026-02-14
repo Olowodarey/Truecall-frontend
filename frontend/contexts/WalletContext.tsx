@@ -2,7 +2,6 @@
 
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { AppConfig, UserSession } from "@stacks/connect";
-import { connect as stacksConnect } from "@stacks/connect";
 
 interface WalletContextType {
   userSession: UserSession;
@@ -22,27 +21,22 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
   const [userAddress, setUserAddress] = useState<string | null>(null);
 
   useEffect(() => {
-    if (userSession.isUserSignedIn()) {
+    // Check if user is returning from authentication
+    if (userSession.isSignInPending()) {
+      userSession.handlePendingSignIn().then((userData) => {
+        setIsConnected(true);
+        setUserAddress(userData.profile.stxAddress.testnet);
+      });
+    } else if (userSession.isUserSignedIn()) {
       const userData = userSession.loadUserData();
       setIsConnected(true);
       setUserAddress(userData.profile.stxAddress.testnet);
     }
   }, [userSession]);
 
-  const connectWallet = async () => {
-    try {
-      const response = await stacksConnect({
-        userSession,
-      });
-
-      if (response && userSession.isUserSignedIn()) {
-        const userData = userSession.loadUserData();
-        setIsConnected(true);
-        setUserAddress(userData.profile.stxAddress.testnet);
-      }
-    } catch (error) {
-      console.error("Wallet connection error:", error);
-    }
+  const connectWallet = () => {
+    const authOrigin = "https://app.blockstack.org";
+    userSession.redirectToSignIn(authOrigin);
   };
 
   const disconnect = () => {
