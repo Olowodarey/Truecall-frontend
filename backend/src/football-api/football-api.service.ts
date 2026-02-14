@@ -48,6 +48,16 @@ export class FootballApiService {
 
         const allMatches: Match[] = [];
 
+        // Calculate date range: today to 30 days from now
+        const today = new Date();
+        const futureDate = new Date();
+        futureDate.setDate(today.getDate() + 30);
+
+        const fromDate = today.toISOString().split('T')[0]; // YYYY-MM-DD
+        const toDate = futureDate.toISOString().split('T')[0]; // YYYY-MM-DD
+
+        this.logger.log(`Fetching matches from ${fromDate} to ${toDate}`);
+
         // Fetch matches from each league
         for (const leagueId of leagues) {
           try {
@@ -58,8 +68,8 @@ export class FootballApiService {
               },
               params: {
                 league: leagueId,
-                season: new Date().getFullYear(),
-                next: 5, // Get next 5 matches per league
+                from: fromDate,
+                to: toDate,
               },
             });
 
